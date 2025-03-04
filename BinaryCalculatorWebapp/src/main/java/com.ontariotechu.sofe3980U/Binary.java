@@ -10,32 +10,39 @@ public class Binary
 	/**
 	* A constructor that generates a binary object.
 	*
-	* @param number a String of the binary values. It should conatins only zeros or ones with any length and order. otherwise, the value of "0" will be stored.   Trailing zeros will be excluded and empty string will be considered as zero.
+	* @param number a String of the binary values. It should contain only zeros or ones with any length and order. otherwise, the value of "0" will be stored.   Trailing zeros will be excluded and empty string will be considered as zero.
 	*/
-    public Binary(String number) {
+	public Binary(String number) {
+		if (number == null || number.isEmpty()) {
+			this.number = "0"; // Default to "0" for null or empty input
+			return;
+		}
+	
+		// Validate the binary string (only '0' or '1' allowed)
 		for (int i = 0; i < number.length(); i++) {
-			// check each character if it's not 0 or 1
-			char ch=number.charAt(i);
-			if(ch!='0' && ch!='1') {
-				number="0"; // if not store "0" and end the function
+			char ch = number.charAt(i);
+			if (ch != '0' && ch != '1') {
+				this.number = "0"; // Default to "0" for invalid input
 				return;
 			}
 		}
-		// remove any trailing zeros
+	
+		// Remove leading zeros
 		int beg;
 		for (beg = 0; beg < number.length(); beg++) {
-			if (number.charAt(beg)!='0')
+			if (number.charAt(beg) != '0') {
 				break;
+			}
 		}
-		//beg has the index of the first non zero digit in the number
-		this.number=number.substring(beg); // exclude the trailing zeros if any
-		// uncomment the following code
-		
-		if(this.number=="") { // replace empty strings with a single zero
-			this.number="0";
+	
+		// If all digits are '0', ensure number is "0"
+		this.number = (beg == number.length()) ? "0" : number.substring(beg);
+	
+		// Ensure empty strings are replaced with "0"
+		if (this.number.isEmpty()) {
+			this.number = "0";
 		}
-		
-    }
+	}
 	/**
 	* Return the binary value of the variable
 	*
@@ -78,5 +85,76 @@ public class Binary
 		Binary result=new Binary(num3);  // create a binary object with the calculated value.
 		return result;
 		
+	}
+
+	public static Binary or(Binary num1,Binary num2)
+	{
+		// the index of the first digit of each number
+		int ind1=num1.number.length()-1;
+		int ind2=num2.number.length()-1;
+		//initial variable
+		String num3="";  // the binary value of the sum
+		while(ind1>=0 ||  ind2>=0) // loop until all digits are processed
+		{	
+			char digit1 = (ind1 >= 0) ? num1.number.charAt(ind1) : '0';
+			char digit2 = (ind2 >= 0) ? num2.number.charAt(ind2) : '0';
+			if(digit1 == '1' || digit2 == '1'){ 
+				num3 = "1"+num3; //convert sum to string and append it to num3
+			}
+			else{
+				num3 = "0"+num3;
+			}
+			ind1--; // update ind1
+			ind2--; //update ind2
+		}
+		Binary result=new Binary(num3);  // create a binary object with the calculated value.
+		return result;
+	}
+	public static Binary and(Binary num1,Binary num2)
+	{
+		// the index of the first digit of each number
+		int ind1=num1.number.length()-1;
+		int ind2=num2.number.length()-1;
+		//initial variable
+		String num3="";  // the binary value of the sum
+		while(ind1>=0 ||  ind2>=0) // loop until all digits are processed
+		{	
+			char digit1 = (ind1 >= 0) ? num1.number.charAt(ind1) : '0';
+			char digit2 = (ind2 >= 0) ? num2.number.charAt(ind2) : '0';
+			
+			if(digit1 == '1' && digit2 == '1'){ 
+				num3 = "1"+num3; //convert sum to string and append it to num3
+			}
+			else{
+				num3 = "0"+num3;
+			}
+			ind1--; // update ind1
+			ind2--; //update ind2
+		}
+		Binary result=new Binary(num3);  // create a binary object with the calculated value.
+		return result;
+	}
+	public static Binary multiply(Binary num1,Binary num2){
+		// Initialize the result and temp variables to 0
+		Binary result = new Binary("0");
+		Binary temp = new Binary("0");
+		for(int i = num2.number.length()-1; i >= 0; i--){
+			//add num1 to result if the current digit of num2 is 1
+			if(num2.number.charAt(i) == '1'){
+				temp.number = num1.number;
+				//shift num1 to the left by the appropriate amount
+				temp = shiftLeft(temp, num2.number.length() - 1 - i);
+				result= Binary.add(result,temp);
+			}
+		}
+		return result;
+	}
+
+	public static Binary shiftLeft(Binary num,int times){
+		for(int i = 0; i < times; i++)
+		{	
+			num.number = num.number + "0";
+		}
+		return num;
 	}
 }	
